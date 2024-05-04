@@ -19,6 +19,7 @@ def escrever_csv(data):
     if not verificar_existencia_titulo(titulo):
         with open('animes.csv', mode='a', encoding='utf-8', newline='') as file:
             writer = csv.writer(file)
+            data[5] = str(data[5]).replace('.', ',')  # Converte a nota para uma string e substitui '.' por ','
             writer.writerow(data)
 
 #region econtrar informações
