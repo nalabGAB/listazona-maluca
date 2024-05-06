@@ -2,6 +2,7 @@ import requests
 from bs4 import BeautifulSoup
 import csv
 import os.path
+import subprocess
 
 base_url = 'https://www.anroll.net' # powered by AnimesROLL
 
@@ -150,5 +151,9 @@ for paginaatual in range(1, maxpaginas+1):
         print(f'Erro ao fazer a solicitação HTTP: {err}')
 else:
     print('__Execução Concluída__')
-        
+
+    current_dir = os.path.dirname(__file__)
+    upload_path = os.path.join(current_dir, 'upload csv file to drive.py')
+    subprocess.run(["python", upload_path])
+    
 #endregion
