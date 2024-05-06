@@ -1,6 +1,7 @@
 import requests
 from bs4 import BeautifulSoup
 import csv
+import os.path
 
 base_url = 'https://www.anroll.net' # powered by AnimesROLL
 
@@ -21,6 +22,26 @@ def escrever_csv(data):
             writer = csv.writer(file)
             data[5] = str(data[5]).replace('.', ',')  # Converte a nota para uma string e substitui '.' por ','
             writer.writerow(data)
+
+# Defina uma função para verificar as informações já presentes no aqruivo CSV
+def atualizar_csv(data):
+    with open('animes.csv', mode='r', encoding='utf-8', newline='') as file:
+        reader = csv.reader(file)
+        rows = list(reader)
+
+    for i, row in enumerate(rows):
+        if row[1] == data[1]:  # Verifica se o título do anime já existe no CSV
+            # Atualiza as informações se necessário
+            if row != data:
+                rows[i] = data
+            break
+    else:
+        rows.append(data)
+
+    with open('animes.csv', mode='w', encoding='utf-8', newline='') as file:
+        writer = csv.writer(file)
+        data[5] = str(data[5]).replace('.', ',')  # Converte a nota para uma string e substitui '.' por ','
+        writer.writerows(rows)
 
 #region econtrar informações
 def lista(url):
@@ -62,6 +83,11 @@ def lista(url):
         print('Erro ao fazer a solicitação HTTP (2)')
 
 #endregion
+
+if os.path.exists('animes.csv'):
+    usar_funcao = atualizar_csv
+else:
+    usar_funcao = escrever_csv
 
 #region encontrar link
 
@@ -106,7 +132,7 @@ for paginaatual in range(1, maxpaginas+1):
                 break
 
             data = [contadoranimes-1, titulo, eps, tags, ano, score, link]
-            escrever_csv(data)
+            usar_funcao(data)
             print(f'--------------ANIME {contadoranimes}--------------')
             print("Título:", titulo)
             print("Eps:", eps)
@@ -123,6 +149,6 @@ for paginaatual in range(1, maxpaginas+1):
     except requests.exceptions.HTTPError as err:
         print(f'Erro ao fazer a solicitação HTTP: {err}')
 else:
-    print('Erro Inexplicavel (1)')
+    print('__Execução Concluída__')
         
 #endregion
