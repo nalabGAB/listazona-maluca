@@ -7,8 +7,11 @@ import subprocess
 base_url = 'https://www.anroll.net' # powered by AnimesROLL
 
 # Defina uma função para verificar se o título do anime já existe no arquivo CSV
+
+current_dir = os.path.dirname(__file__)
+animespath = os.path.join(current_dir, 'animes.csv')
 def verificar_existencia_titulo(titulo):
-    with open('animes.csv', mode='r', encoding='utf-8', newline='') as file:
+    with open(animespath, mode='r', encoding='utf-8', newline='') as file:
         reader = csv.reader(file)
         for row in reader:
             if row[1] == titulo:  # Compara o título do anime com cada linha do arquivo CSV
@@ -19,14 +22,14 @@ def verificar_existencia_titulo(titulo):
 def escrever_csv(data):
     titulo = data[1]
     if not verificar_existencia_titulo(titulo):
-        with open('animes.csv', mode='a', encoding='utf-8', newline='') as file:
+        with open(animespath, mode='a', encoding='utf-8', newline='') as file:
             writer = csv.writer(file)
             data[5] = str(data[5]).replace('.', ',')  # Converte a nota para uma string e substitui '.' por ','
             writer.writerow(data)
 
 # Defina uma função para verificar as informações já presentes no aqruivo CSV
 def atualizar_csv(data):
-    with open('animes.csv', mode='r', encoding='utf-8', newline='') as file:
+    with open(animespath, mode='r', encoding='utf-8', newline='') as file:
         reader = csv.reader(file)
         rows = list(reader)
 
@@ -39,7 +42,7 @@ def atualizar_csv(data):
     else:
         rows.append(data)
 
-    with open('animes.csv', mode='w', encoding='utf-8', newline='') as file:
+    with open(animespath, mode='w', encoding='utf-8', newline='') as file:
         writer = csv.writer(file)
         data[5] = str(data[5]).replace('.', ',')  # Converte a nota para uma string e substitui '.' por ','
         writer.writerows(rows)
@@ -85,7 +88,7 @@ def lista(url):
 
 #endregion
 
-if os.path.exists('animes.csv'):
+if os.path.exists(animespath):
     usar_funcao = atualizar_csv
 else:
     usar_funcao = escrever_csv
@@ -152,7 +155,6 @@ for paginaatual in range(1, maxpaginas+1):
 else:
     print('__Execução Concluída__')
 
-    current_dir = os.path.dirname(__file__)
     upload_path = os.path.join(current_dir, 'upload csv file to drive.py')
     subprocess.run(["python", upload_path])
     
